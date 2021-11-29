@@ -36,8 +36,18 @@ class MyStack(TerraformStack):
             tags = tag
             )
 
+        demo_app_function_app = FunctionApp(
+            self,
+            "demo_app_function_app",
+            identity=[{"type": "SystemAssigned"}],  
+        )
+
         TerraformOutput(self, 'vnet_id',
             value=example_vnet.id
+        )
+
+        TerraformOutput(self, 'identity',
+            value=demo_app_function_app.identity.identity_ids
         )
 
 app = App()
