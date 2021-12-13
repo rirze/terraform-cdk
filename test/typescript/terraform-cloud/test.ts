@@ -15,7 +15,7 @@ describe("full integration test", () => {
   let workspaceName: string;
   const orgName = "cdktf";
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     workspaceName = `${GITHUB_RUN_NUMBER}-${crypto
       .randomBytes(10)
       .toString("hex")}`;
@@ -41,7 +41,7 @@ describe("full integration test", () => {
       },
     });
 
-    expect(driver.deploy()).toMatchSnapshot();
+    expect(driver.deploy("source-stack")).toMatchSnapshot();
     await client.Workspaces.deleteByName(orgName, workspaceName);
   });
 
@@ -60,10 +60,34 @@ describe("full integration test", () => {
     });
 
     process.env.TF_EXECUTE_LOCAL = "true";
-    driver.deploy();
+    driver.deploy("source-stack");
     process.env.TF_EXECUTE_LOCAL = undefined;
-    driver.deploy();
+    driver.deploy("source-stack");
 
     await client.Workspaces.deleteByName(orgName, workspaceName);
+  });
+
+  withAuth("deploy locally and then in Terraform Cloud", async () => {
+    const client = new TerraformCloud(TERRAFORM_CLOUD_TOKEN);
+
+    await client.Workspaces.create(orgName, {
+      data: {
+        attributes: {
+          name: workspaceName,
+          executionMode: "remote",
+          terraformVersion: TERRAFORM_VERSION,
+        },
+        type: "workspaces",
+      },
+    });
+
+    driver.deploy("source-stack");
+    driver.deploy("consumer-stack");
+
+    await client.Workspaces.deleteByName(orgName, workspaceName);
+
+    expect(driver.readLocalFile("origin-file.txt")).toEqual(
+      driver.readLocalFile("consumer-file.txt")
+    );
   });
 });
