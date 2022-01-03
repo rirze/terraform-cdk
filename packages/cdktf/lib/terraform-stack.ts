@@ -252,15 +252,16 @@ export class TerraformStack extends Construct {
       return this.crossStackDataSources[String(fromStack)];
     }
     const originBackend = fromStack.backend;
+    const originPath = fromStack.node.path;
 
     // TODO: stack name in construct identifier?
     const remoteState = originBackend.getRemoteStateDataSource(
       this,
-      `cross-stack-reference-input-${fromStack}`,
-      fromStack.toString()
+      `cross-stack-reference-input-${originPath}`,
+      originPath
     );
 
-    this.crossStackDataSources[String(fromStack)] = remoteState;
+    this.crossStackDataSources[originPath] = remoteState;
     return remoteState;
   }
 
