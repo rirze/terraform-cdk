@@ -55,7 +55,10 @@
     "nohoist": [
       "archiver",
       "**/archiver",
-      "**/archiver/**"
+      "**/archiver/**",
+      "json-stable-stringify",
+      "**/json-stable-stringify",
+      "**/json-stable-stringify/**"
     ]
   },
   "devDependencies": {
