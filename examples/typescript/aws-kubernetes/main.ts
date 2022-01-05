@@ -137,10 +137,12 @@ class EksClusterStack extends TerraformStack {
       },
     });
 
+    // We create the Eks cluster within the module, this is so we can access the cluster resource afterwards
     this.eks = new eks.DataAwsEksCluster(this, "eks-cluster", {
       name: eksModule.clusterIdOutput,
     });
 
+    // We need to fetch the authentication data from the EKS cluster as well
     this.eksAuth = new eks.DataAwsEksClusterAuth(this, "eks-auth", {
       name: eksModule.clusterIdOutput,
     });
