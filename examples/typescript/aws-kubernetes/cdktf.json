@@ -8,6 +8,5 @@
   "terraformModules": [
     "terraform-aws-modules/vpc/aws@ ~> 3.2.0",
     "terraform-aws-modules/eks/aws@ ~> 17.24.0"
-  ],
-  "projectId": "7f82fed7-1fb0-4b6b-8647-29e85f92951f"
+  ]
 }
