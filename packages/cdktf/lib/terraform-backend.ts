@@ -24,9 +24,9 @@ export abstract class TerraformBackend extends TerraformElement {
    * Creates a TerraformRemoteState resource that accesses this backend.
    */
   public abstract getRemoteStateDataSource(
-    _scope: Construct,
-    _name: string,
-    _fromStack: string
+    scope: Construct,
+    name: string,
+    fromStack: string
   ): TerraformRemoteState;
 
   /**
