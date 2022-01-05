@@ -116,6 +116,12 @@ export function rawString(str: string): IResolvable {
 }
 
 class Reference extends TFExpression {
+  /**
+   * A single reference could be used in multiple stacks,
+   * e.g. if we expose the ref directly or as token on the stack.
+   * We need to store the identifier for each stack,
+   * so that the resolved identifier string matches the stack it's resolved in.
+   */
   private crossStackIdentifier: Record<string, string> = {};
   constructor(private identifier: string, private originStack: TerraformStack) {
     super(identifier);
