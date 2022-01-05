@@ -24,7 +24,7 @@ describe("StackDependencies", () => {
       createStack("stack3"),
     ];
 
-    expect(new StackDependencies(stacks).pendingDeployableStacks()).toEqual(
+    expect(new StackDependencies(stacks).pendingDeployableStacks).toEqual(
       stacks
     );
   });
@@ -35,7 +35,7 @@ describe("StackDependencies", () => {
     const stack3 = createStack("stack3", [stack2.name]);
 
     expect(
-      new StackDependencies([stack1, stack2, stack3]).pendingDeployableStacks()
+      new StackDependencies([stack1, stack2, stack3]).pendingDeployableStacks
     ).toEqual([stack1]);
   });
 
@@ -45,13 +45,13 @@ describe("StackDependencies", () => {
     const stack3 = createStack("stack3", [stack2.name]);
 
     const stackDependencies = new StackDependencies([stack1, stack2, stack3]);
-    expect(stackDependencies.pendingDeployableStacks()).toEqual([stack1]);
+    expect(stackDependencies.pendingDeployableStacks).toEqual([stack1]);
 
     stackDependencies.startRun(stack1);
-    expect(stackDependencies.pendingDeployableStacks()).toEqual([]);
+    expect(stackDependencies.pendingDeployableStacks).toEqual([]);
 
     stackDependencies.finishRun(stack1);
-    expect(stackDependencies.pendingDeployableStacks()).toEqual([stack2]);
+    expect(stackDependencies.pendingDeployableStacks).toEqual([stack2]);
   });
 
   it("can return multiple available stacks", () => {
@@ -68,7 +68,7 @@ describe("StackDependencies", () => {
       stack5,
     ]);
 
-    expect(stackDependencies.pendingDeployableStacks()).toEqual([
+    expect(stackDependencies.pendingDeployableStacks).toEqual([
       stack1,
       stack2,
       stack3,
@@ -84,6 +84,6 @@ describe("StackDependencies", () => {
     stackDependencies.startRun(stack1);
     stackDependencies.finishRun(stack1);
 
-    expect(stackDependencies.pendingDeployableStacks()).toEqual([stack2]);
+    expect(stackDependencies.pendingDeployableStacks).toEqual([stack2]);
   });
 });
