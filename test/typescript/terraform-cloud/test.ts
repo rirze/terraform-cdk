@@ -67,27 +67,31 @@ describe("full integration test", () => {
     await client.Workspaces.deleteByName(orgName, workspaceName);
   });
 
-  withAuth("deploy locally and then in Terraform Cloud", async () => {
-    const client = new TerraformCloud(TERRAFORM_CLOUD_TOKEN);
+  // Only the origin stack is in TFC, the consumer stack is local
+  withAuth(
+    "deploy with cross stack reference origin in Terraform Cloud",
+    async () => {
+      const client = new TerraformCloud(TERRAFORM_CLOUD_TOKEN);
 
-    await client.Workspaces.create(orgName, {
-      data: {
-        attributes: {
-          name: workspaceName,
-          executionMode: "remote",
-          terraformVersion: TERRAFORM_VERSION,
+      await client.Workspaces.create(orgName, {
+        data: {
+          attributes: {
+            name: workspaceName,
+            executionMode: "remote",
+            terraformVersion: TERRAFORM_VERSION,
+          },
+          type: "workspaces",
         },
-        type: "workspaces",
-      },
-    });
+      });
 
-    driver.deploy("source-stack");
-    driver.deploy("consumer-stack");
+      driver.deploy("source-stack");
+      driver.deploy("consumer-stack");
 
-    await client.Workspaces.deleteByName(orgName, workspaceName);
+      await client.Workspaces.deleteByName(orgName, workspaceName);
 
-    expect(driver.readLocalFile("origin-file.txt")).toEqual(
-      driver.readLocalFile("consumer-file.txt")
-    );
-  });
+      expect(driver.readLocalFile("origin-file.txt")).toEqual(
+        driver.readLocalFile("consumer-file.txt")
+      );
+    }
+  );
 });
