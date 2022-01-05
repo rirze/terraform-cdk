@@ -123,46 +123,57 @@ When you reference resources from one stack in another stack, you can do so by e
 ```typescript
 import { Construct } from "constructs";
 import { App, TerraformStack } from "cdktf";
-import { AwsProvider, EC2 } from "./.gen/providers/aws";
+import { AwsProvider } from "./.gen/providers/aws";
+import { Vpc } from "./my-aws-vpc-construct";
+import { DockerBackend } from "./my-docker-backend-construct";
 
-interface MyStackConfig {
-  region?: string;
-  id?: string;
-}
-
-class MyStack extends TerraformStack {
-  instance?: EC2.Instance;
-
-  constructor(scope: Construct, id: string, config: MyStackConfig) {
+class VPCStack extends TerraformStack {
+  public vpc: Vpc;
+  constructor(scope: Construct, id: string, public region = "us-east-1") {
     super(scope, id);
-
-    const { region = "us-east-1" } = config;
 
     new AwsProvider(this, "aws", {
       region,
     });
 
-    if (!config.id) {
-      this.instance = new EC2.Instance(this, "Hello", {
-        ami: "ami-2757f631",
-        instanceType: "t2.micro",
-      });
-    }
+    this.vpc = new Vpc(this, "vpc", {});
+  }
+}
 
-    new EC2.Eip(this, "World", {
-      instance: config.id ?? this.instance.id,
+interface BackendStackConfig {
+  region: string;
+  vpcId: string;
+  dockerImage: string;
+}
+class BackendStack extends TerraformStack {
+  constructor(scope: Construct, id: string, config: BackendStackConfig) {
+    super(scope, id);
+
+    const { region, vpcId, dockerImage } = config;
+
+    new AwsProvider(this, "aws", {
+      region,
+    });
+
+    new DockerBackend(this, "docker-backend", {
+      vpcId,
+      dockerImage,
     });
   }
 }
 
 const app = new App();
-const origin = new MyStack(app, "origin-stack", {});
-new MyStack(app, "target-stack", { id: origin.instance?.id });
+const origin = new VPCStack(app, "origin-stack");
+new BackendStack(app, "target-stack", {
+  region: origin.region,
+  vpcId: origin.vpc.id,
+  dockerImage: "org/my-image:latest",
+});
 
 app.synth();
 ```
 
-From a usage perspective it looks like we are accessing the value of `instance` from the `origin-stack` and then referencing it in the `target-stack`.
+From a usage perspective it looks like we are accessing the `id` value of `vpc` from the `origin-stack` instance of `VpcStack` and then referencing it in the `target-stack` instance of `BackendStack`.
 Accessing a value from a different stack causes the value to be exported as `TerraformOutput` in the origin stack.
 The value is than accessed through a `TerraformRemoteState` in the target stack.
 Both are automatically added to the respective stacks to make the process seemless.
