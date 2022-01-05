@@ -23,7 +23,7 @@ export class StackDependencies {
     this.deployedStacks.push(stack);
   }
 
-  public pendingDeployableStacks(): SynthesizedStack[] {
+  public get pendingDeployableStacks(): SynthesizedStack[] {
     return this.pendingStacks.filter((pendingStack) => {
       const unmetDependencies = pendingStack.dependencies.filter(
         (dependency) => {
