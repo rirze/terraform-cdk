@@ -42,12 +42,10 @@ exports.post = options => {
 function terraformCloudConfig(baseName, organizationName, workspaceName) {
   template = readFileSync('./src/main/java/com/mycompany/app/Main.java', 'utf-8');
 
-  result = template.replace(`import com.hashicorp.cdktf.App;`, `import com.hashicorp.cdktf.App;
-import com.hashicorp.cdktf.NamedRemoteWorkspace;
+  result = template.replace(`import com.hashicorp.cdktf.LocalBackend;`, `import com.hashicorp.cdktf.NamedRemoteWorkspace;
 import com.hashicorp.cdktf.RemoteBackend;
 import com.hashicorp.cdktf.RemoteBackendProps;`);
-  result = result.replace(`new Main(app, "${baseName}");`, `Main stack = new Main(app, "${baseName}");
-new RemoteBackend(stack, RemoteBackendProps.builder().hostname("app.terraform.io").organization("${organizationName}").workspaces(new NamedRemoteWorkspace("${workspaceName}")).build());`);
+  result = result.replace(`LocalBackend.Builder.create(this).build();`, `new RemoteBackend(this, RemoteBackendProps.builder().hostname("app.terraform.io").organization("${organizationName}").workspaces(new NamedRemoteWorkspace("${workspaceName}")).build());`);
 
   writeFileSync('./src/main/java/com/mycompany/app/Main.java', result, 'utf-8');
 }

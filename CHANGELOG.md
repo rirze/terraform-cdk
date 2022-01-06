@@ -1,3 +1,81 @@
+## Unreleased
+
+### Breaking Change: Remove `-state` option
+
+If you use the implicit Local Backend by not having a Backend specified any of your stacks you need to migrate to using an explicit Local Backend. The new default for path will be the same as the now removed `-state` option.
+
+#### Typescript
+
+```ts
+import { LocalBackend } from "cdktf";
+import * as path from "path";
+
+class MyStack extends Stack {
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
+
+    new LocalBackend(this);
+  }
+}
+```
+
+#### Python
+
+```python
+from cdktf import  TerraformStack, LocalBackend
+
+
+class MyStack(TerraformStack):
+    def __init__(self, scope: Construct, ns: str):
+        super().__init__(scope, ns)
+
+        LocalBackend(self)
+```
+
+#### Java
+
+```java
+import com.hashicorp.cdktf.App;
+import com.hashicorp.cdktf.TerraformOutput;
+import com.hashicorp.cdktf.LocalBackend;
+
+
+public class Main extends TerraformStack {
+    public Main(final Construct scope, final String id) {
+        super(scope, id);
+
+        LocalBackend.Builder.create(this).build();
+    }
+}
+```
+
+#### Go
+
+```go
+func NewMyStack(scope constructs.Construct, id string) cdktf.TerraformStack {
+	stack := cdktf.NewTerraformStack(scope, &id)
+
+    cdktf.LocalBackend(stack)
+}
+```
+
+#### C#
+
+```csharp
+using HashiCorp.Cdktf;
+
+namespace MyCompany.MyApp
+{
+    class MyApp : TerraformStack
+    {
+        public MyApp(Construct scope, string id) : base(scope, id)
+        {
+            new LocalBackend(this);
+        }
+    }
+}
+```
+
 ## 0.8.5
 
 ### fix

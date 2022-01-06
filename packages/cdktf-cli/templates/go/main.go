@@ -7,6 +7,7 @@ import (
 
 func NewMyStack(scope constructs.Construct, id string) cdktf.TerraformStack {
 	stack := cdktf.NewTerraformStack(scope, &id)
+	cdktf.LocalBackend(stack)
 
 	// The code that defines your stack goes here
 

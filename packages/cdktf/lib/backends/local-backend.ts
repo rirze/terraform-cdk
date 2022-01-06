@@ -1,3 +1,4 @@
+import * as path from "path";
 import { Construct } from "constructs";
 import { TerraformBackend } from "../terraform-backend";
 import { keysToSnakeCase } from "../util";
@@ -5,10 +6,19 @@ import {
   TerraformRemoteState,
   DataTerraformRemoteStateConfig,
 } from "../terraform-remote-state";
+import { TerraformStack } from "..";
 
 export class LocalBackend extends TerraformBackend {
-  constructor(scope: Construct, private readonly props: LocalBackendProps) {
+  private readonly props: LocalBackendProps;
+  constructor(scope: Construct, props: LocalBackendProps = {}) {
     super(scope, "backend", "local");
+
+    const stackId = TerraformStack.of(this).node.id;
+    this.props = {
+      ...props,
+      path:
+        props.path || path.join(process.cwd(), `terraform.${stackId}.tfstate`),
+    };
   }
 
   protected synthesizeAttributes(): { [name: string]: any } {

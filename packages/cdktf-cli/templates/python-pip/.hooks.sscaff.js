@@ -43,11 +43,10 @@ exports.post = options => {
 function terraformCloudConfig(baseName, organizationName, workspaceName) {
   template = readFileSync('./main.py', 'utf-8');
 
-  const templateWithImports = template.replace(`from cdktf import App, TerraformStack`,
+  const templateWithImports = template.replace(`from cdktf import App, TerraformStack, LocalBackend`,
     `from cdktf import App, TerraformStack, RemoteBackend, NamedRemoteWorkspace`)
 
-  const result = templateWithImports.replace(`MyStack(app, "${baseName}")`, `stack = MyStack(app, "${baseName}")
-RemoteBackend(stack,
+  const result = templateWithImports.replace(`LocalBackend(self)`, `RemoteBackend(self,
   hostname='app.terraform.io',
   organization='${organizationName}',
   workspaces=NamedRemoteWorkspace('${workspaceName}')

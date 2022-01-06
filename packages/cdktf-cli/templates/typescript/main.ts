@@ -1,9 +1,10 @@
 import { Construct } from "constructs";
-import { App, TerraformStack } from "cdktf";
+import { App, TerraformStack, LocalBackend } from "cdktf";
 
 class MyStack extends TerraformStack {
   constructor(scope: Construct, name: string) {
     super(scope, name);
+    new LocalBackend(this);
 
     // define resources here
   }

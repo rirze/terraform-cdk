@@ -9,6 +9,7 @@ namespace MyCompany.MyApp
     {
         public MyApp(Construct scope, string id) : base(scope, id)
         {
+            new LocalBackend(this);
             // define resources here
         }
 
